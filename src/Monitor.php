@@ -1,7 +1,8 @@
 <?php
 
 namespace Nachet\Monitor;
-
+use Spatie\Ssh\Ssh;
+use Response;
 class Monitor
 {
     
@@ -18,9 +19,23 @@ class Monitor
         $cpu = shell_exec("grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}'");
         return (float)$cpu;
     }
-    public function getContainers(){
-        $containers=shell_exec('for i in $(docker ps --format \'{{.Names}}\');do echo -ne "$i,";done;');
-        return $containers;
+    public function getContainersStaus(){
+        $command='docker container ls --format="{\"id\":\"{{.ID}}\",\"name\":\"{{.Names}}\",\"Status\":\"{{.Status}}\",\"Created\":\"{{.CreatedAt}}\"}" | jq --slurp';
+        $data= Ssh::create('ubuntu', config('monitor.host'))
+         ->execute($command);
+         $data2 = [];
+         $new=json_decode($data->getOutput());
+         // print_r ($new);
+         foreach($new as $serivce){
+             // print_r($serivce);
+             $data2[] = [
+                 'id'=>$serivce->id,
+                 'name' => $serivce->name,
+                 'created'=>$serivce->Created,
+                 'Status' => $serivce->Status
+             ];
+         }
+         return Response::json($data2);
 
     }
     public function Ram(){
