@@ -11,7 +11,7 @@ class MonitorServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        dd('it works');
+   
         /*
          * Optional methods to load your package assets
          */
