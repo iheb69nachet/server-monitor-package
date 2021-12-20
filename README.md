@@ -15,11 +15,19 @@ composer require nachet/monitor
 ```
 
 ## Usage
-
-```php
-// Usage description here
+Generating a ssh key:
+```bash
+ssh-keygen
+ssh-copy-id user@ip
 ```
 
+Adding a hosty in the config file:
+```bash
+php artisan vendor:publish --tag=config
+```
+```env
+HostName=ip
+```
 ### Testing
 
 ```bash
